@@ -32,7 +32,7 @@ return new Double(n);
 }
 
 public void display() {
-System.out.print("Double List"); for(int i = 0; i < size; i++)
+System.out.println("Double List"); for(int i = 0; i < size; i++)
 System.out.println("[" + i + "] = " + doubleList[i]);
 }
 }

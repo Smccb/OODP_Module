@@ -18,7 +18,7 @@ hexList = new int[size];
 
 // Store each list item an the appropriate array
 	for(int i=0;i<size;i++) {
-		hexList[i] = Integer.parseInt(token.nextToken(),16);
+		hexList[i] = Integer.decode(token.nextToken());
 	}
 
 }
@@ -38,7 +38,7 @@ return new Integer(n);
 
 //this display method runs rather than the superclass display method, example of polymorphism overloading
 public void display() {
-	System.out.print("Hex List");
+	System.out.println("Hex List");
 
 	for(int i = 0; i < size; i++)
 	System.out.println("[" + i + "] = " + hexList[i]);

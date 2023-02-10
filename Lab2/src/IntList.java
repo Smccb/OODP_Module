@@ -38,7 +38,7 @@ return new Integer(n);
 
 //this display method runs rather than the superclass display method, example of polymorphism overloading
 public void display() {
-	System.out.print("Integer List");
+	System.out.println("Integer List");
 
 	for(int i = 0; i < size; i++)
 	System.out.println("[" + i + "] = " + intList[i]);
