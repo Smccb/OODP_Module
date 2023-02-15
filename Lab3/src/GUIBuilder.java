@@ -1,4 +1,3 @@
-//builds a general window using window class that uses the mac or windows specific classes
 
 //Client
 public class GUIBuilder{
