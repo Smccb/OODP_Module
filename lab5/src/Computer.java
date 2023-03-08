@@ -10,11 +10,13 @@ public class Computer {
 	 private boolean isBluetoothEnabled;
 	 
 	 
+	 //display method for printing
 	 public void display(){
 	        System.out.println(CPU + ", " + HDD + ", " + RAM + ", " +
 	        		isGraphicsCardEnabled + ", " + isBluetoothEnabled );
 	    }
 	 
+	 //constructor for Computer class
 	 public Computer(Builder builder) {
 	        this.RAM = builder.RAM;
 	        this.HDD = builder.HDD;
@@ -23,6 +25,7 @@ public class Computer {
 	        this.isBluetoothEnabled = builder.isBluetoothEnabled;
 	    }
 	 
+	//inner class Builder starts here
 	 public static class Builder {
 		//required parameters
 		 private String RAM;
@@ -32,12 +35,14 @@ public class Computer {
 		 private boolean isGraphicsCardEnabled;
 		 private boolean isBluetoothEnabled;
 		 
+		 //builder constructor
 		 public Builder(String RAM, String HDD, String CPU){
 	            this.RAM = RAM;
 	            this.HDD = HDD;
 	            this.CPU = CPU;
 	        }
 		 
+		 //setters for using build class and setting the details to create object
 			public Builder setRAM(String rAM) {
 				this.RAM = rAM;
 				return this;
@@ -58,6 +63,7 @@ public class Computer {
 				this.isBluetoothEnabled = isBluetoothEnabled;
 				return this;
 			}
+			//build method for creating the computer object
 			public Computer build() {
 	            return new Computer(this);
 	        }
