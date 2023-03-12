@@ -1,4 +1,4 @@
-
+//this class acts the same as the decorator class
 
 public class Url extends Content{
     private String txt;

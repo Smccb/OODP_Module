@@ -20,6 +20,6 @@ public class Client{
       //added code for lab, for https
       System.out.println("----------------------------------");
       System.out.println("Https decorated text show()");
-      t4.show();
+      t4.show();//runs the show method (that was overriden from the Content and Url classes)in the httpsDecorator class
    }
 }
