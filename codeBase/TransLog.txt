@@ -1,0 +1,2 @@
+Account ID: 2 Balance: 123.0 Type: Saving
+Transcaction logs: 
