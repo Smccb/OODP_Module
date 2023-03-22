@@ -1,2 +1,4 @@
-Account ID: 2 Balance: 123.0 Type: Saving
+Account ID: 1 Balance: 3455.0 Type: Checking
 Transcaction logs: 
+Amount: $1234.0 Time :9min Type: 
+Amount: $123.0 Time :9min Type: 
