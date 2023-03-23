@@ -1,4 +1,10 @@
+<<<<<<< Updated upstream
 INDEX VERSION 1.131+C:\Users\Sarah\Documents\GitHub\OODP_Module\.metadata\.plugins\org.eclipse.jdt.core
+=======
+INDEX VERSION 1.131+C:\Users\yogad\Documents\GitHub\OODP_Module\.metadata\.plugins\org.eclipse.jdt.core
+1675908524.index
+2235272219.index
+>>>>>>> Stashed changes
 1865797976.index
 3531605674.index
 2234634515.index
