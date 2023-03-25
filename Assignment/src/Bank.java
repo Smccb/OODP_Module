@@ -5,9 +5,9 @@ import java.awt.Label;
 import java.awt.TextField;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Vector;
 import java.awt.Color;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -79,13 +79,13 @@ public class Bank extends Frame implements ActionListener {
 	private int accId;
 	private JFrame jCreateAcc;
 
-	private HashMap<User, ArrayList<Account>> users;
+	private HashMap<User, Vector<Account>> users;
 	private User loggedInUser;
 	private Calendar rightNow;
 	private int hour;
 
 	public Bank() {
-		users = new HashMap<User, ArrayList<Account>>();
+		users = new HashMap<User, Vector<Account>>();
 		loggedInUser = null;
 		rightNow = Calendar.getInstance();
 
@@ -111,6 +111,7 @@ public class Bank extends Frame implements ActionListener {
 		transfer.setFont(new Font("Serif", Font.PLAIN, 30));
 		transfer.setText(" 1.  Transfer ");
 		transfer.addActionListener(new ActionListener() {
+			
 			public void actionPerformed(ActionEvent e) {
 				j4 = new JFrame();
 				JPanel mainPanel = new JPanel();
@@ -147,7 +148,7 @@ public class Bank extends Frame implements ActionListener {
 									accWith = i;
 								}
 							}
-							for (ArrayList<Account> array : users.values()) {
+							for (Vector<Account> array : users.values()) {
 								for (Account i : array) {
 									if (acc2 == i.getAccId()) {
 										check2 = true;
@@ -676,7 +677,7 @@ public class Bank extends Frame implements ActionListener {
 								Account newAccount = new Account(d1, accType,
 										i1);
 								boolean check = true;
-								for (ArrayList<Account> array : users.values()) {
+								for (Vector<Account> array : users.values()) {
 									for (Account i : array) {
 										if (i1 == i.getAccId()) {
 											JOptionPane.showMessageDialog(null, " Account exists");
@@ -687,7 +688,7 @@ public class Bank extends Frame implements ActionListener {
 								}
 								if(check)
 								{
-								ArrayList<Account> newList = new ArrayList<Account>();
+								Vector<Account> newList = new Vector<Account>();
 								newList.add(newAccount);
 								users.put(newUser, newList);
 								JOptionPane.showMessageDialog(null,
@@ -734,14 +735,14 @@ public class Bank extends Frame implements ActionListener {
 
 	public void createUser(String name, String password) {
 		User user = new User(name, password);
-		ArrayList<Account> list = new ArrayList<Account>();
+		Vector<Account> list = new Vector<Account>();
 		users.put(user, list);
 	}
 
 	public void createAccount(double balance, String type, int accId) {
 		if (users.get(loggedInUser).size() <= 5) {
 			boolean check = true;
-			for (ArrayList<Account> array : users.values()) {
+			for (Vector<Account> array : users.values()) {
 				for (Account i : array) {
 					if (accId == i.getAccId()) {
 						JOptionPane.showMessageDialog(null, " Account ID Exists !!");
@@ -783,7 +784,7 @@ public class Bank extends Frame implements ActionListener {
 	public void deposit(double amount, int accId, String type) {
 		Account obj = null;
 		boolean check = false;
-		for (ArrayList <Account> array : users.values()) {
+		for (Vector <Account> array : users.values()) {
 			for(Account i : array){
 			if (accId == i.getAccId()) {
 				check = true;
@@ -853,12 +854,7 @@ public class Bank extends Frame implements ActionListener {
 		}
 	}
 
-	public static void main(String args[]) {
-		Bank b1 = new Bank();
-		b1.showLoginMenu();
-	}
-
-	public void actionPerformed(ActionEvent arg0) {
+	public void actionPerformed(ActionEvent arg) {
 		// TODO Auto-generated method stub
 
 	}
