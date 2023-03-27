@@ -1,12 +1,13 @@
 import java.awt.BorderLayout;
 import java.awt.Font;
+import java.awt.Frame;
 import java.awt.Label;
 import java.awt.TextField;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Vector;
 import java.awt.Color;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -20,7 +21,7 @@ import javax.swing.JRadioButton;
 
 
 
-public class Bank extends JFrame implements ActionListener {
+public class Bank extends Frame implements ActionListener {
 
 	private JFrame jSignPage;
 	private Label lblInput;
@@ -78,13 +79,13 @@ public class Bank extends JFrame implements ActionListener {
 	private int accId;
 	private JFrame jCreateAcc;
 
-	private HashMap<User, ArrayList<Account>> users;
+	private HashMap<User, Vector<Account>> users;
 	private User loggedInUser;
 	private Calendar rightNow;
 	private int hour;
 
 	public Bank() {
-		users = new HashMap<User, ArrayList<Account>>();
+		users = new HashMap<User, Vector<Account>>();
 		loggedInUser = null;
 		rightNow = Calendar.getInstance();
 
@@ -110,6 +111,7 @@ public class Bank extends JFrame implements ActionListener {
 		transfer.setFont(new Font("Serif", Font.PLAIN, 30));
 		transfer.setText(" 1.  Transfer ");
 		transfer.addActionListener(new ActionListener() {
+			
 			public void actionPerformed(ActionEvent e) {
 				j4 = new JFrame();
 				JPanel mainPanel = new JPanel();
@@ -146,7 +148,7 @@ public class Bank extends JFrame implements ActionListener {
 									accWith = i;
 								}
 							}
-							for (ArrayList<Account> array : users.values()) {
+							for (Vector<Account> array : users.values()) {
 								for (Account i : array) {
 									if (acc2 == i.getAccId()) {
 										check2 = true;
@@ -156,8 +158,8 @@ public class Bank extends JFrame implements ActionListener {
 
 							if (check1 && check2) {
 								if (amount <= accWith.getBalance()) {
-									withDraw(amount, acc1, "Transfer");
-									deposit(amount, acc2, "Transfer");
+									BankController.withDraw(amount, acc1, "Transfer");
+									BankController.deposit(amount, acc2, "Transfer");
 									JOptionPane.showMessageDialog(null,
 											"Tranfer successful");
 									j4.dispose();
@@ -242,7 +244,7 @@ public class Bank extends JFrame implements ActionListener {
 						try {
 							double d1 = Double.parseDouble(tfBal.getText());
 							int i1 = Integer.parseInt(tfAccId.getText());
-							createAccount(d1, accType, i1);
+							BankController.createAccount(d1, accType, i1, users);
 							newCreateAcc.dispose();
 						} catch (Exception E) {
 							JOptionPane.showMessageDialog(null,
@@ -292,7 +294,7 @@ public class Bank extends JFrame implements ActionListener {
 							int accId = Integer.parseInt(delAccId.getText());
 							System.out.println((users.get(loggedInUser)).get(0)
 									.getAccId());
-							deleteAccount(accId);
+							BankController.deleteAccount(accId);
 							j1.dispose();
 						} catch (Exception e1) {
 							JOptionPane
@@ -343,7 +345,7 @@ public class Bank extends JFrame implements ActionListener {
 						try {
 							double d1 = Double.parseDouble(depAmount.getText());
 							int i1 = Integer.parseInt(depAccId.getText());
-							deposit(d1, i1, depType.getText());
+							BankController.deposit(d1, i1, depType.getText());
 							depositF.dispose();
 						} catch (NumberFormatException e2) {
 							JOptionPane
@@ -397,7 +399,7 @@ public class Bank extends JFrame implements ActionListener {
 							int accId = Integer.parseInt(withAccId.getText());
 							double amount = Double.parseDouble(withAmount
 									.getText());
-							withDraw(amount, accId, withType.getText());
+							BankController.withDraw(amount, accId, withType.getText());
 							j2.dispose();
 
 						} catch (Exception e4) {
@@ -444,7 +446,7 @@ public class Bank extends JFrame implements ActionListener {
 					public void actionPerformed(ActionEvent e) {
 						try {
 							int accId = Integer.parseInt(showAccId.getText());
-							showAccount(accId);
+							BankController.showAccount(accId);
 						} catch (Exception e5) {
 							JOptionPane
 									.showMessageDialog(null, "Invalid Input");
@@ -551,12 +553,10 @@ public class Bank extends JFrame implements ActionListener {
 		tfPass = new TextField(5);
 		mainPanel.add(tfPass);
 
-		
-		//sign up page on Main all buttons pannel
 		signUp = new JButton("Sign Up");
 		signUp.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				showCreateAccMenu(); //runns the create account
+				showCreateAccMenu();
 			}
 		});
 		mainPanel.add(signUp);
@@ -677,7 +677,7 @@ public class Bank extends JFrame implements ActionListener {
 								Account newAccount = new Account(d1, accType,
 										i1);
 								boolean check = true;
-								for (ArrayList<Account> array : users.values()) {
+								for (Vector<Account> array : users.values()) {
 									for (Account i : array) {
 										if (i1 == i.getAccId()) {
 											JOptionPane.showMessageDialog(null, " Account exists");
@@ -688,7 +688,7 @@ public class Bank extends JFrame implements ActionListener {
 								}
 								if(check)
 								{
-								ArrayList<Account> newList = new ArrayList<Account>();
+								Vector<Account> newList = new Vector<Account>();
 								newList.add(newAccount);
 								users.put(newUser, newList);
 								JOptionPane.showMessageDialog(null,
@@ -731,132 +731,6 @@ public class Bank extends JFrame implements ActionListener {
 		jCreatAcc.setBackground(Color.GREEN);
 		jCreatAcc.setVisible(true);
 		jCreatAcc.pack();
-	}
-
-	public void createUser(String name, String password) {
-		User user = new User(name, password);
-		ArrayList<Account> list = new ArrayList<Account>();
-		users.put(user, list);
-	}
-
-	public void createAccount(double balance, String type, int accId) {
-		if (users.get(loggedInUser).size() <= 5) {
-			boolean check = true;
-			for (ArrayList<Account> array : users.values()) {
-				for (Account i : array) {
-					if (accId == i.getAccId()) {
-						JOptionPane.showMessageDialog(null, " Account ID Exists !!");
-						check = false;
-						break;
-					}
-				}
-			}
-			if (check) {
-				Account acc = new Account(balance, type, accId);
-				users.get(loggedInUser).add(acc);
-				JOptionPane.showMessageDialog(null, "Account Created !! || Account ID : " + accId + ", Balance : $" + balance + ", Type : " + type);
-			}
-		} else {
-			JOptionPane.showMessageDialog(null, " No more accounts can be created");
-		}
-
-	}
-
-	public void deleteAccount(int accId)
-
-	{
-		boolean check = true;
-		for (Account i : users.get(loggedInUser)) {
-			if (accId == i.getAccId()) {
-				users.get(loggedInUser).remove(i);
-				check = false;
-				JOptionPane.showMessageDialog(null, "Account deleted !! || Account Id : " + accId );
-				break;
-			}
-
-		}
-		if (check) {
-			JOptionPane.showMessageDialog(null, "Account does not exist!!");
-		}
-		return;
-	}
-
-	public void deposit(double amount, int accId, String type) {
-		Account obj = null;
-		boolean check = false;
-		for (ArrayList <Account> array : users.values()) {
-			for(Account i : array){
-			if (accId == i.getAccId()) {
-				check = true;
-				obj = i;
-			}
-		  }
-		}
-		if (check) {
-			obj.setBalance(obj.getBalance() + amount);
-			int time1 = rightNow.get(Calendar.MINUTE);
-			obj.doTransaction(amount, time1, type);
-			JOptionPane.showMessageDialog(null, "Deposit SuccessFull || Account ID : " + accId + ", Amount deposited : $" + amount +", NewBalance : $ " + obj.getBalance() + ", Type : " + type);
-			loggedInUser.Spend(accId, amount, type);
-		} else {
-			JOptionPane.showMessageDialog(null, "Deposit failed!!");
-		}
-	}
-
-	public void withDraw(double amount, int accId, String type) {
-		boolean check = true;
-		Account found = null;
-		for (Account i : users.get(loggedInUser)) {
-			if (i.getAccId() == accId) {
-				check = false;
-				found = i;
-				break;
-			}
-		}
-		if (check) {
-			JOptionPane.showMessageDialog(null, "Account not found !!");
-		} else {
-			if (found.getBalance() < amount) {
-				JOptionPane.showMessageDialog(null, "In Sufficint balance");
-			} else {
-				hour = rightNow.get(Calendar.MINUTE);
-				found.setBalance(found.getBalance() - amount);
-				found.doTransaction(amount, hour, type);
-				JOptionPane
-						.showMessageDialog(
-								null,
-								"Acc ID: "
-										+ found.getAccId()
-										+ " . Withdrawal complete. Amount withDrawn : $" + amount + ". Remaining balance : $"
-										+ found.getBalance());
-				loggedInUser.Spend(accId, amount, type);
-			}
-		}
-	}
-
-	public void showAccount(int accId) {
-		boolean check = true;
-		Account obj = null;
-		for (Account i : users.get(loggedInUser)) {
-			if (i.getAccId() == accId) {
-				check = false;
-				obj = i;
-				break;
-			}
-		}
-		if (check) {
-			JOptionPane.showMessageDialog(null, "Account ID not found !!");
-		} else {
-			obj.printTransLog();
-			JOptionPane.showMessageDialog(null, "Account ID " + accId + ". Transcaction written to the text file (TrabsLog.txt)");
-			j3.dispose();
-
-		}
-	}
-	
-	public static void main(String args[]) {
-		Bank b1 = new Bank();
-		b1.showLoginMenu();
 	}
 	
 	public void actionPerformed(ActionEvent arg) {

@@ -1,7 +1,8 @@
-
+/*
 public class Main {
 	public static void main(String args[]) {
-		Gui b1 = new Gui();
+		Bank b1 = new Bank();
 		b1.showLoginMenu();
 	}
 }
+*/

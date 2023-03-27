@@ -1,5 +1,6 @@
 
 import java.util.ArrayList;
+import java.util.Vector;
 
 
 public class User{
@@ -9,14 +10,14 @@ public class User{
 	private String password;
 	private int userID;
 	private static int count = 1;
-	private ArrayList<String> userTrans;
+	private Vector<String> userTrans;
 	
 	public User(String name, String password)
 	{
 		this.name = name;
 		this.password = password;
 		this.userID = count;
-		userTrans = new ArrayList<String>();
+		userTrans = new Vector<String>();
 		count++;
 		
 	}
@@ -43,7 +44,7 @@ public class User{
     	userTrans.add(s1);  	
     }
     
-    public ArrayList<String> getUserTrans()
+    public Vector<String> getUserTrans()
     {
     	return userTrans;
     }
