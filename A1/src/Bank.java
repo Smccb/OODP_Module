@@ -720,7 +720,7 @@ public class Bank extends Frame implements ActionListener {
 								newList.add(newAccount);						//copys account to new accounts arraylist
 								users.put(newUser, newList);				//in users hashmap puts the newUser array and the newAccounts arraylist stored here
 								JOptionPane.showMessageDialog(null,
-										"Account Created || UserName : " + tfUserName.getText() + ", Account ID : " + tfAccId.getText() + ", Balance : $" + tfBal.getText() + ", Type : " + accType);
+										"Account Created || UserName : " + tfUserName.getText() + ", Account ID : " + tfAccId.getText() + ", Balance : $" + tfBal.getText() + ", Type : " + accType);  //shows a dollar sign
 								}
 								jCreateAcc.dispose();
 								jCreatAcc.dispose();
@@ -834,7 +834,7 @@ public class Bank extends Frame implements ActionListener {
 			obj.setBalance(obj.getBalance() + amount);
 			int time1 = rightNow.get(Calendar.MINUTE);
 			obj.doTransaction(amount, time1, type);
-			JOptionPane.showMessageDialog(null, "Deposit SuccessFull || Account ID : " + accId + ", Amount deposited : $" + amount +", NewBalance : $ " + obj.getBalance() + ", Type : " + type);
+			JOptionPane.showMessageDialog(null, "Deposit SuccessFull || Account ID : " + accId + ", Amount deposited : $" + amount +", NewBalance : $ " + obj.getBalance() + ", Type : " + type);  //shows a dollar sign
 			loggedInUser.Spend(accId, amount, type);
 		} else {
 			JOptionPane.showMessageDialog(null, "Deposit failed!!");
@@ -865,7 +865,7 @@ public class Bank extends Frame implements ActionListener {
 								null,
 								"Acc ID: "
 										+ found.getAccId()
-										+ " . Withdrawal complete. Amount withDrawn : $" + amount + ". Remaining balance : $"
+										+ " . Withdrawal complete. Amount withDrawn : $" + amount + ". Remaining balance : $"  //shows a dollar sign
 										+ found.getBalance());
 				loggedInUser.Spend(accId, amount, type);
 			}
@@ -902,4 +902,10 @@ public class Bank extends Frame implements ActionListener {
 
 	}
 
+	//execute method runs execute in command class
+	   private void executeCommand(Command command){
+	      // We could keep a command history in a stack here
+	      command.Execute();
+	   }
+	
 }
