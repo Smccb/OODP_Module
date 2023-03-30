@@ -5,6 +5,8 @@ import java.awt.Label;
 import java.awt.TextField;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -13,6 +15,7 @@ import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -83,14 +86,16 @@ public class Bank extends Frame implements ActionListener {
 	private User loggedInUser;
 	private Calendar rightNow;
 	private int hour;
+	private boolean student;
 
 	public Bank() {
 		users = new HashMap<User, ArrayList<Account>>();
 		loggedInUser = null;
 		rightNow = Calendar.getInstance();
-
+		student = false;
 	}
 
+//main menu
 	public void showMainMenu() {
 
 		jMenu = new JFrame();
@@ -555,7 +560,7 @@ public class Bank extends Frame implements ActionListener {
 		signUp = new JButton("Sign Up");
 		signUp.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				showCreateAccMenu();
+				showCreateAccMenu();						//user and account created here
 			}
 		});
 		mainPanel.add(signUp);
@@ -616,13 +621,30 @@ public class Bank extends Frame implements ActionListener {
 
 		tfUserPass = new TextField(10);
 		mainPanel.add(tfUserPass);
+		
+		//handels check if student user to make student user account
+		 JCheckBox cbStudent = new JCheckBox("Student User?", false);
+		 cbStudent.addItemListener(new ItemListener() {    
+             public void itemStateChanged(ItemEvent e) {                 
+            	 if (e.getStateChange() == 1)
+            		 student = true;   
+            	 
+            	 else
+            		 student = false;    
+            	 
+            	 System.out.println("student? " + student);
+             }    
+          }); 
+		 
+		mainPanel.add(cbStudent);
 
-		JCreateUser = new JButton("Create User");
+		JCreateUser = new JButton("Create User");			//press here creates initial user
 		mainPanel.add(JCreateUser);
 		JCreateUser.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (tfUserName.getText().length() != 0
-						&& tfUserPass.getText().length() != 0) {
+				if (tfUserName.getText().length() != 0 && tfUserPass.getText().length() != 0) {
+					
+					//create new account frame opens
 					jCreateAcc = new JFrame();
 					JPanel mainPanel = new JPanel();
 
@@ -663,18 +685,25 @@ public class Bank extends Frame implements ActionListener {
 					tfAccId = new TextField(10);
 					mainPanel.add(tfAccId);
 
-					JButton create = new JButton("Create Account");
+					JButton create = new JButton("Create Account"); //triggers account creation code
 
-					create.addActionListener(new ActionListener() {
+					create.addActionListener(new ActionListener() { //>>>>here
 						public void actionPerformed(ActionEvent e) {
-
-							User newUser = new User(tfUserName.getText(),
-									tfUserPass.getText());
+							User newUser;
+							//User newUser = new User(tfUserName.getText(),tfUserPass.getText()); //User type object created here
+							if(student) {
+								newUser = UserBuilderDirector.getStudentUser(tfUserName.getText(),tfUserPass.getText());
+							}
+							else {
+								newUser = UserBuilderDirector.getRegularUser(tfUserName.getText(),tfUserPass.getText());
+							}
+								
 							try {
 								double d1 = Double.parseDouble(tfBal.getText());
 								int i1 = Integer.parseInt(tfAccId.getText());
-								Account newAccount = new Account(d1, accType,
-										i1);
+								
+								Account newAccount = new Account(d1, accType, i1);  //Account type object created here
+								
 								boolean check = true;
 								for (ArrayList<Account> array : users.values()) {
 									for (Account i : array) {
@@ -687,9 +716,9 @@ public class Bank extends Frame implements ActionListener {
 								}
 								if(check)
 								{
-								ArrayList<Account> newList = new ArrayList<Account>();
-								newList.add(newAccount);
-								users.put(newUser, newList);
+								ArrayList<Account> newList = new ArrayList<Account>(); 		
+								newList.add(newAccount);						//copys account to new accounts arraylist
+								users.put(newUser, newList);				//in users hashmap puts the newUser array and the newAccounts arraylist stored here
 								JOptionPane.showMessageDialog(null,
 										"Account Created || UserName : " + tfUserName.getText() + ", Account ID : " + tfAccId.getText() + ", Balance : $" + tfBal.getText() + ", Type : " + accType);
 								}
@@ -733,9 +762,18 @@ public class Bank extends Frame implements ActionListener {
 	}
 
 	public void createUser(String name, String password) {
-		User user = new User(name, password);
-		ArrayList<Account> list = new ArrayList<Account>();
-		users.put(user, list);
+		//User user = new User(name, password);						//create a new user object
+		
+		User user;
+		if(student) {
+			user = UserBuilderDirector.getStudentUser(tfUserName.getText(),tfUserPass.getText());
+		}
+		else {
+			user = UserBuilderDirector.getRegularUser(tfUserName.getText(),tfUserPass.getText());
+		}
+		
+		ArrayList<Account> list = new ArrayList<Account>();		//create arraylist of accounts
+		users.put(user, list);					//store the user and account into the users hashmap of arraylists
 	}
 
 	public void createAccount(double balance, String type, int accId) {
@@ -751,8 +789,9 @@ public class Bank extends Frame implements ActionListener {
 				}
 			}
 			if (check) {
-				Account acc = new Account(balance, type, accId);
-				users.get(loggedInUser).add(acc);
+				Account acc = new Account(balance, type, accId);		//new account object created here
+				users.get(loggedInUser).add(acc);		//adds created Account object to user object using user hashmap
+				
 				JOptionPane.showMessageDialog(null, "Account Created !! || Account ID : " + accId + ", Balance : $" + balance + ", Type : " + type);
 			}
 		} else {
