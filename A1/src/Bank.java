@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.awt.Color;
+import java.awt.FileDialog;
+
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
@@ -139,49 +141,20 @@ public class Bank extends Frame implements ActionListener {
 				transTranfer = new JButton("Transfer");
 				transTranfer.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
+						//executeCommand(new transfer());
 						try {
-							int acc1 = Integer.parseInt(transFromAccId
-									.getText());
+							int acc1 = Integer.parseInt(transFromAccId.getText());
 							int acc2 = Integer.parseInt(transInAccId.getText());
 							int amount = Integer.parseInt(transAmount.getText());
-							boolean check1 = false;
-							boolean check2 = false;
-							for (Account i : users.get(loggedInUser)) {
-								if (acc1 == i.getAccId()) {
-									check1 = true;
-									accWith = i;
-								}
-							}
-							for (ArrayList<Account> array : users.values()) {
-								for (Account i : array) {
-									if (acc2 == i.getAccId()) {
-										check2 = true;
-									}
-								}
-							}
-
-							if (check1 && check2) {
-								if (amount <= accWith.getBalance()) {
-									withDraw(amount, acc1, "Transfer");
-									deposit(amount, acc2, "Transfer");
-									JOptionPane.showMessageDialog(null,
-											"Tranfer successful");
-									j4.dispose();
-
-								} else {
-									JOptionPane
-											.showMessageDialog(null,
-													"Tranfer failed : in suffiecent balance");
-								}
-							} else {
-								JOptionPane.showMessageDialog(null,
-										"Tranfer failed : Account not found ");
-							}
-						} catch (Exception e5) {
+							
+							//pass in[ acc1, acc2, amount, user hashmap, loggedInUser, accwith, j4]
+							//call transfer command here
+							executeCommand(new Transfer(acc1, acc2, amount, users, loggedInUser, accWith, j4));
+						}
+						catch (Exception e5) {
 							JOptionPane.showMessageDialog(null,
 									"Tranfer failed : Invalid Input");
 						}
-
 					}
 				});
 				mainPanel.add(transTranfer);
@@ -903,9 +876,10 @@ public class Bank extends Frame implements ActionListener {
 	}
 
 	//execute method runs execute in command class
-	   private void executeCommand(Command command){
-	      // We could keep a command history in a stack here
-	      command.Execute();
-	   }
-	
+	private void executeCommand(Command command){
+		// We could keep a command history in a stack here
+		command.Execute();
+	}
+	   
+	      
 }
