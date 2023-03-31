@@ -1,14 +1,12 @@
-import java.util.ArrayList;
+/*import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
 
 public class Reciever implements BankCommands{
 
-
-	private Account accWith;
 	
 	@Override
-	public void transfer() {
+	public void transfer(acc1, acc2, amount) {
 		// TODO Auto-generated method stub
 		try {
 			
@@ -106,4 +104,4 @@ public class Reciever implements BankCommands{
 		
 	}
 	
-}
+}*/
