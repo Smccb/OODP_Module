@@ -4,6 +4,9 @@ import javax.swing.JOptionPane;
 
 public class Reciever implements BankCommands{
 
+
+	private Account accWith;
+	
 	@Override
 	public void transfer() {
 		// TODO Auto-generated method stub
