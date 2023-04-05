@@ -1,2 +1,2 @@
-Account ID: 12 Balance: 1235.0 Type: Saving
+Account ID: 1 Balance: 6.78097373E8 Type: Checking
 Transcaction logs: 

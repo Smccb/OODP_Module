@@ -9,12 +9,14 @@ public class Account {
 	private String type;
 	private int accId;
 	private ArrayList<Transaction> trans;
+	private String currency;
 	
-	public Account(double balance, String type, int accId){
+	public Account(double balance, String type, int accId, String currency){
 		this.balance = balance;
 		this.type = type;
 		this.accId = accId;
 		trans =  new ArrayList<Transaction>();
+		this.currency = currency;
 	}
 	
 	public double getBalance(){
@@ -33,6 +35,16 @@ public class Account {
 	public int getAccId()
 	{
 		return accId;
+	}
+	
+	//adding currencys public accessor methods
+	public String getCurrency()
+	{
+		return currency;
+	}
+	public void setCurrency(String currency)
+	{
+		this.currency = currency;
 	}
 	
 	

@@ -89,14 +89,29 @@ public class Bank extends Frame implements ActionListener {
 	private Calendar rightNow;
 	private int hour;
 	private boolean student;
+	private String currency;
+	
+	//used for tracking instance of Bank class
+	private static Bank firstInstance = null;
 
 	public Bank() {
 		users = new HashMap<User, ArrayList<Account>>();
 		loggedInUser = null;
 		rightNow = Calendar.getInstance();
 		student = false;
+		currency = "dollar";
 	}
 
+	//singleton code to make sure only one instance of bank exists at a time
+	public static Bank getInstance() {
+		
+		if(firstInstance == null)
+			firstInstance = new Bank();
+		
+		return firstInstance;
+		
+	}
+	
 //main menu
 	public void showMainMenu() {
 
@@ -143,13 +158,13 @@ public class Bank extends Frame implements ActionListener {
 					public void actionPerformed(ActionEvent e) {
 						//executeCommand(new transfer());
 						try {
-							int acc1 = Integer.parseInt(transFromAccId.getText());
-							int acc2 = Integer.parseInt(transInAccId.getText());
+							int accFrom = Integer.parseInt(transFromAccId.getText());
+							int accTO = Integer.parseInt(transInAccId.getText());
 							int amount = Integer.parseInt(transAmount.getText());
 							
 							//pass in[ acc1, acc2, amount, user hashmap, loggedInUser, accwith, j4]
 							//call transfer command here
-							executeCommand(new Transfer(acc1, acc2, amount));
+							executeCommand(new Transfer(accFrom, accTO, amount, users, loggedInUser, j4, hour, rightNow, accWith));
 						}
 						catch (Exception e5) {
 							JOptionPane.showMessageDialog(null,
@@ -187,8 +202,7 @@ public class Bank extends Frame implements ActionListener {
 				group.add(checking);
 				group.add(saving);
 
-				mainPanel.add(new Label(" Create your Account :  "
-						+ loggedInUser.getName()));
+				mainPanel.add(new Label(" Create your Account :  "+ loggedInUser.getName()));
 
 				mainPanel.add(new Label(" Select your account type : "));
 				checking.addActionListener(new ActionListener() {
@@ -219,9 +233,9 @@ public class Bank extends Frame implements ActionListener {
 					public void actionPerformed(ActionEvent e) {
 
 						try {
-							double d1 = Double.parseDouble(tfBal.getText());
-							int i1 = Integer.parseInt(tfAccId.getText());
-							executeCommand(new CreateAccount(d1, accType, i1));
+							double balance = Double.parseDouble(tfBal.getText());
+							int accId = Integer.parseInt(tfAccId.getText());
+							executeCommand(new CreateAccount(balance, accType, accId, users, loggedInUser, currency));
 							newCreateAcc.dispose();
 						} catch (Exception E) {
 							JOptionPane.showMessageDialog(null,
@@ -271,7 +285,7 @@ public class Bank extends Frame implements ActionListener {
 							int accId = Integer.parseInt(delAccId.getText());
 							System.out.println((users.get(loggedInUser)).get(0)
 									.getAccId());
-							executeCommand(new DeleteAccount(accId));
+							executeCommand(new DeleteAccount(accId, users, loggedInUser));
 							j1.dispose();
 						} catch (Exception e1) {
 							JOptionPane
@@ -320,9 +334,9 @@ public class Bank extends Frame implements ActionListener {
 				depBut.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						try {
-							double d1 = Double.parseDouble(depAmount.getText());
-							int i1 = Integer.parseInt(depAccId.getText());
-							executeCommand(new Deposit(d1, i1, depType.getText()));
+							double amount = Double.parseDouble(depAmount.getText());
+							int depID = Integer.parseInt(depAccId.getText());
+							executeCommand(new Deposit(amount, depID, depType.getText(), users, loggedInUser, rightNow));
 							depositF.dispose();
 						} catch (NumberFormatException e2) {
 							JOptionPane
@@ -375,8 +389,7 @@ public class Bank extends Frame implements ActionListener {
 						try {
 							int accId = Integer.parseInt(withAccId.getText());
 							double amount = Double.parseDouble(withAmount.getText());
-							executeCommand(new WithDraw(amount, accId, withType.getText()));
-							//withDraw(amount, accId, withType.getText());
+							executeCommand(new WithDraw(amount, accId, withType.getText(), users, loggedInUser, hour, rightNow));
 							j2.dispose();
 
 						} catch (Exception e4) {
@@ -423,7 +436,7 @@ public class Bank extends Frame implements ActionListener {
 					public void actionPerformed(ActionEvent e) {
 						try {
 							int accId = Integer.parseInt(showAccId.getText());
-							showAccount(accId);
+							executeCommand(new ShowAccount(accId, users, loggedInUser, j3));
 						} catch (Exception e5) {
 							JOptionPane
 									.showMessageDialog(null, "Invalid Input");
@@ -447,12 +460,7 @@ public class Bank extends Frame implements ActionListener {
 		showAllAcc.setText("7.  showAllAccount ");
 		showAllAcc.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				for (Account i : users.get(loggedInUser)) {
-					System.out.println("Account ID: " + i.getAccId() + " "
-							+ "Balance : $" + i.getBalance() + " " + "Type: "
-							+ i.getType());
-				}
-				JOptionPane.showMessageDialog(null,"Accounts data printed to the Console!!");
+				executeCommand(new ShowAllAcc(users, loggedInUser));
 			}
 		});
 		mainPanel.add(showAllAcc);
@@ -462,9 +470,7 @@ public class Bank extends Frame implements ActionListener {
 		delUser.setText("8.  deleteUser ");
 		delUser.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				users.remove(loggedInUser);
-				JOptionPane.showMessageDialog(null, "User Deleted !!");
-				jMenu.dispose();
+				executeCommand(new DeleteUser(users, loggedInUser, jMenu));
 			}
 		});
 		mainPanel.add(delUser);
@@ -658,8 +664,21 @@ public class Bank extends Frame implements ActionListener {
 					tfAccId = new TextField(10);
 					mainPanel.add(tfAccId);
 
+					//when clicked change currency to euro or dollar
+					JButton currencyEuro = new JButton("euro");
+					currencyEuro.addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent e) {
+							currency = "euro";
+						}
+					});
+					JButton currencyDollar = new JButton("dollar");
+					currencyDollar.addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent e) {
+							currency = "dollar";
+						}
+					});
+						
 					JButton create = new JButton("Create Account"); //triggers account creation code
-
 					create.addActionListener(new ActionListener() { //>>>>here
 						public void actionPerformed(ActionEvent e) {
 							User newUser;
@@ -675,7 +694,7 @@ public class Bank extends Frame implements ActionListener {
 								double d1 = Double.parseDouble(tfBal.getText());
 								int i1 = Integer.parseInt(tfAccId.getText());
 								
-								Account newAccount = new Account(d1, accType, i1);  //Account type object created here
+								Account newAccount = new Account(d1, accType, i1, currency);  //Account type object created here
 								
 								boolean check = true;
 								for (ArrayList<Account> array : users.values()) {
@@ -692,9 +711,26 @@ public class Bank extends Frame implements ActionListener {
 								ArrayList<Account> newList = new ArrayList<Account>(); 		
 								newList.add(newAccount);						//copys account to new accounts arraylist
 								users.put(newUser, newList);				//in users hashmap puts the newUser array and the newAccounts arraylist stored here
-								JOptionPane.showMessageDialog(null,
-										"Account Created || UserName : " + tfUserName.getText() + ", Account ID : " + tfAccId.getText() + ", Balance : $" + tfBal.getText() + ", Type : " + accType);  //shows a dollar sign
+								
+								//run depending on account currency
+								String contentSting = "Account Created || UserName : " + tfUserName.getText() + ", Account ID : " + tfAccId.getText() + ", Type : " + accType;
+								String bal = tfBal.getText();
+								if(currency == "euro") {
+									EuroDecorator decorator = new EuroDecorator(bal, new Currency(contentSting));
+									//currencyString = decorator.show();
+									decorator.show();
+									//JOptionPane.showMessageDialog(null, contentSting);
 								}
+								else {
+									DollarDecorator decorator = new DollarDecorator(bal, new Currency(contentSting));
+									//currencyString = decorator.show();
+									decorator.show();
+									//JOptionPane.showMessageDialog(null, contentSting);
+								}
+								 
+								  //shows a dollar sign
+								}
+								
 								jCreateAcc.dispose();
 								jCreatAcc.dispose();
 							} catch (Exception E) {
@@ -704,6 +740,8 @@ public class Bank extends Frame implements ActionListener {
 							}
 						}
 					});
+					mainPanel.add(currencyDollar);
+					mainPanel.add(currencyEuro);
   				    mainPanel.add(create);
 
 					jCreateAcc.setTitle("Creating Account"); // "super" Frame
@@ -734,250 +772,21 @@ public class Bank extends Frame implements ActionListener {
 		jCreatAcc.pack();
 	}
 
-	public void createUser(String name, String password) {
-		//User user = new User(name, password);						//create a new user object
-		
-		User user;
-		if(student) {
-			user = UserBuilderDirector.getStudentUser(tfUserName.getText(),tfUserPass.getText());
-		}
-		else {
-			user = UserBuilderDirector.getRegularUser(tfUserName.getText(),tfUserPass.getText());
-		}
-		
-		ArrayList<Account> list = new ArrayList<Account>();		//create arraylist of accounts
-		users.put(user, list);					//store the user and account into the users hashmap of arraylists
-	}
+	
 
-	public void showAccount(int accId) {
-		boolean check = true;
-		Account obj = null;
-		for (Account i : users.get(loggedInUser)) {
-			if (i.getAccId() == accId) {
-				check = false;
-				obj = i;
-				break;
-			}
-		}
-		if (check) {
-			JOptionPane.showMessageDialog(null, "Account ID not found !!");
-		} else {
-			obj.printTransLog();
-			JOptionPane.showMessageDialog(null, "Account ID " + accId + ". Transcaction written to the text file (TrabsLog.txt)");
-			j3.dispose();
-
-		}
-	}
-
-	public static void main(String args[]) {
-		Bank b1 = new Bank();
-		b1.showLoginMenu();
+	
+	
+	//execute method runs execute in command class
+	private void executeCommand(Command command){
+		// We could keep a command history in a stack here
+		command.Execute();
 	}
 
 	public void actionPerformed(ActionEvent arg0) {
 		// TODO Auto-generated method stub
 
 	}
-
-	//execute method runs execute in command class
-	private void executeCommand(Command command){
-		// We could keep a command history in a stack here
-		command.Execute();
-	}
-	   
-	class Transfer extends JFrame implements Command {
-
-		int acc1;
-		int acc2;
-		int amount;
-		
-		
-		public Transfer(int acc1, int acc2, int amount) {
-			// TODO Auto-generated constructor stub
-			this.acc1 = acc1;
-			this.acc2= acc2;
-			this.amount = amount;
-		}
-		@Override
-		public void Execute() {
-			// TODO Auto-generated method stub
-			boolean check1 = false;
-			boolean check2 = false;
-			
-			for (Account i : users.get(loggedInUser)) {
-				if (acc1 == i.getAccId()) {
-					check1 = true;
-					accWith = i;
-				}
-			}
-			for (ArrayList<Account> array : users.values()) {
-				for (Account i : array) {
-					if (acc2 == i.getAccId()) {
-						check2 = true;
-					}
-				}
-			}
-
-			if (check1 && check2) {
-				if (amount <= accWith.getBalance()) {
-					executeCommand(new WithDraw(amount, acc1, "Transfer"));
-					executeCommand(new Deposit(amount, acc1, "Transfer"));
-					//deposit(amount, acc2, "Transfer");
-					JOptionPane.showMessageDialog(null,
-							"Tranfer successful");
-					j4.dispose();
-
-				} else {
-					JOptionPane
-							.showMessageDialog(null,
-									"Tranfer failed : in suffiecent balance");
-				}
-			} else {
-				JOptionPane.showMessageDialog(null,
-						"Tranfer failed : Account not found ");
-			}
-		}
-	}  
-	
-	class CreateAccount extends JFrame implements Command {
-
-		
-		String type;
-		int accID;
-		CreateAccount(double d1, String type, int accID){
-			this.type = type;
-			this.accID = accID;
-		}
-		@Override
-		public void Execute() {
-			// TODO Auto-generated method stub
-			if (users.get(loggedInUser).size() <= 5) {
-				boolean check = true;
-				for (ArrayList<Account> array : users.values()) {
-					for (Account i : array) {
-						if (accId == i.getAccId()) {
-							JOptionPane.showMessageDialog(null, " Account ID Exists !!");
-							check = false;
-							break;
-						}
-					}
-				}
-				if (check) {
-					Account acc = new Account(balance, type, accId);		//new account object created here
-					users.get(loggedInUser).add(acc);		//adds created Account object to user object using user hashmap
-					
-					JOptionPane.showMessageDialog(null, "Account Created !! || Account ID : " + accId + ", Balance : $" + balance + ", Type : " + type);
-				}
-			} else {
-				JOptionPane.showMessageDialog(null, " No more accounts can be created");
-			}
-		}
-	}
-	
-	class WithDraw extends JFrame implements Command {
-		double amount;
-		int acc1;
-		String type;
-		public WithDraw(double amount2, int acc1, String type){
-			this.acc1 = acc1;
-			this.amount = amount2;
-			this.type = type;
-		}
-		@Override
-		public void Execute() {
-			// TODO Auto-generated method stub
-			boolean check = true;
-			Account found = null;
-			for (Account i : users.get(loggedInUser)) {
-				if (i.getAccId() == accId) {
-					check = false;
-					found = i;
-					break;
-				}
-			}
-			if (check) {
-				JOptionPane.showMessageDialog(null, "Account not found !!");
-			} else {
-				if (found.getBalance() < amount) {
-					JOptionPane.showMessageDialog(null, "In Sufficint balance");
-				} else {
-					hour = rightNow.get(Calendar.MINUTE);
-					found.setBalance(found.getBalance() - amount);
-					found.doTransaction(amount, hour, type);
-					JOptionPane
-							.showMessageDialog(
-									null,
-									"Acc ID: "
-											+ found.getAccId()
-											+ " . Withdrawal complete. Amount withDrawn : $" + amount + ". Remaining balance : $"  //shows a dollar sign
-											+ found.getBalance());
-					loggedInUser.Spend(accId, amount, type);
-				}
-			}
-		}
-	}
-	
-	class DeleteAccount extends JFrame implements Command {
-		int amount;
-		int acc1;
-		String title;
-		public DeleteAccount(int amount){
-			this.acc1 = acc1;
-			this.amount = amount;
-			this.title = title;
-		}
-		@Override
-		public void Execute() {
-			// TODO Auto-generated method stub
-			boolean check = true;
-			for (Account i : users.get(loggedInUser)) {
-				if (accId == i.getAccId()) {
-					users.get(loggedInUser).remove(i);
-					check = false;
-					JOptionPane.showMessageDialog(null, "Account deleted !! || Account Id : " + accId );
-					break;
-				}
-
-			}
-			if (check) {
-				JOptionPane.showMessageDialog(null, "Account does not exist!!");
-			}
-			return;
-		}
-	}
-	
-	class Deposit extends JFrame implements Command {
-		double amount;
-		int acc1;
-		String type;
-		
-		public Deposit(double d1, int acc1, String type){
-			this.acc1 = acc1;
-			this.amount = d1;
-			this.type = type;
-		}
-		@Override
-		public void Execute() {
-			// TODO Auto-generated method stub
-			Account obj = null;
-			boolean check = false;
-			for (ArrayList <Account> array : users.values()) {
-				for(Account i : array){
-				if (accId == i.getAccId()) {
-					check = true;
-					obj = i;
-				}
-			  }
-			}
-			if (check) {
-				obj.setBalance(obj.getBalance() + amount);
-				int time1 = rightNow.get(Calendar.MINUTE);
-				obj.doTransaction(amount, time1, type);
-				JOptionPane.showMessageDialog(null, "Deposit SuccessFull || Account ID : " + accId + ", Amount deposited : $" + amount +", NewBalance : $ " + obj.getBalance() + ", Type : " + type);  //shows a dollar sign
-				loggedInUser.Spend(accId, amount, type);
-			} else {
-				JOptionPane.showMessageDialog(null, "Deposit failed!!");
-			}
-		}
-	}
 }
+
+	
+	
