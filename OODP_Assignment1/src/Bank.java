@@ -217,6 +217,21 @@ public class Bank extends Frame implements ActionListener {
 						accType = "Saving";
 					}
 				});
+				
+				//when clicked change currency to euro or dollar
+				JButton currencyEuro = new JButton("euro");
+				currencyEuro.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						currency = "euro";
+					}
+				});
+				JButton currencyDollar = new JButton("dollar");
+				currencyDollar.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						currency = "dollar";
+					}
+				});
+				
 				mainPanel.add(saving);
 
 				mainPanel.add(new Label("Amount to be added: "));
@@ -226,7 +241,8 @@ public class Bank extends Frame implements ActionListener {
 				mainPanel.add(new Label("AccountNumber: "));
 				tfAccId = new TextField(10);
 				mainPanel.add(tfAccId);
-
+				mainPanel.add(currencyDollar);
+				mainPanel.add(currencyEuro);
 				JButton create = new JButton("Create Account");
 
 				create.addActionListener(new ActionListener() {

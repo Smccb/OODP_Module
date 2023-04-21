@@ -37,7 +37,20 @@ class CreateAccount implements Command {
 					Account acc = new Account(balance, type, accId, currency);		//new account object created here
 					users.get(loggedInUser).add(acc);		//adds created Account object to user object using user hashmap
 					
-					JOptionPane.showMessageDialog(null, "Account Created !! || Account ID : " + accId + ", Balance : $" + balance + ", Type : " + type);
+					String contentSting = "Account Created || UserName : " + ", Account ID : " + accId + ", Type : " + type;
+					String bal = balance+"";
+					if(currency == "euro") {
+						EuroDecorator decorator = new EuroDecorator(bal, new Currency(contentSting));
+						//currencyString = decorator.show();
+						decorator.show();
+						//JOptionPane.showMessageDialog(null, contentSting);
+					}
+					else {
+						DollarDecorator decorator = new DollarDecorator(bal, new Currency(contentSting));
+						//currencyString = decorator.show();
+						decorator.show();
+						//JOptionPane.showMessageDialog(null, contentSting);
+					}
 				}
 			} else {
 				JOptionPane.showMessageDialog(null, " No more accounts can be created");
